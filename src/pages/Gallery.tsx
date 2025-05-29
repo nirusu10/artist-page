@@ -42,6 +42,27 @@ const Gallery = () => {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [lightboxOpen, artworks.length])
 
+  useEffect(() => {
+    if (lightboxOpen) {
+      window.history.pushState({ lightbox: true }, '')
+    }
+  }, [lightboxOpen])
+
+  useEffect(() => {
+    const onPopState = () => {
+      if (lightboxOpen) {
+        setLightboxOpen(false)
+        window.history.pushState(null, '') // stay on this page
+      }
+    }
+
+    window.addEventListener('popstate', onPopState)
+
+    return () => {
+      window.removeEventListener('popstate', onPopState)
+    }
+  }, [lightboxOpen])
+
   const prevImage = () => {
     setCurrentIndex((currentIndex - 1 + artworks.length) % artworks.length)
   }
