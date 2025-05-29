@@ -1,9 +1,129 @@
-const Gallery: React.FC = () => {
+import React, { useEffect, useState } from 'react'
+
+type Artwork = {
+  id: number
+  title: string
+  imageUrl: string
+  description: string
+}
+
+const Gallery = () => {
+  const [artworks, setArtworks] = useState<Artwork[]>([])
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  useEffect(() => {
+    const fetchedArtworks = Array.from({ length: 10 }, (_, i) => ({
+      id: i + 1,
+      title: `Artwork #${i + 1}`,
+      imageUrl: `https://picsum.photos/seed/art${i}/800/600`,
+      description: 'Random image from Lorem Picsum.',
+    }))
+    setArtworks(fetchedArtworks)
+  }, [])
+
+  useEffect(() => {
+    if (!lightboxOpen) return // only listen when open
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        setCurrentIndex(
+          (prevIndex) => (prevIndex - 1 + artworks.length) % artworks.length
+        )
+      } else if (e.key === 'ArrowRight') {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % artworks.length)
+      } else if (e.key === 'Escape') {
+        setLightboxOpen(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [lightboxOpen, artworks.length])
+
+  const prevImage = () => {
+    setCurrentIndex((currentIndex - 1 + artworks.length) % artworks.length)
+  }
+
+  const nextImage = () => {
+    setCurrentIndex((currentIndex + 1) % artworks.length)
+  }
+
+  if (!artworks.length) return null
+
   return (
-    <main className='p-8 text-center'>
-      <h1 className='text-4xl font-bold mb-4'>Gallery</h1>
-      <p className='text-lg text-gray-700'>See my best works</p>
-    </main>
+    <section className='max-w-6xl mx-auto px-4 py-10'>
+      <h1 className='text-4xl font-serif font-bold text-center mb-8'>
+        Gallery
+      </h1>
+
+      <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3'>
+        {artworks.map((art, i) => (
+          <div
+            key={art.id}
+            className='bg-white rounded-2xl shadow-md hover:shadow-lg transition overflow-hidden cursor-pointer'
+            onClick={() => {
+              setCurrentIndex(i)
+              setLightboxOpen(true)
+            }}
+          >
+            <img
+              src={art.imageUrl}
+              alt={art.title}
+              className='w-full h-60 object-cover'
+            />
+            <div className='p-4'>
+              <h2 className='text-xl font-serif font-semibold mb-2 text-textPrimary'>
+                {art.title}
+              </h2>
+              <p className='text-sm text-gray-600'>{art.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Lightbox Modal */}
+      {lightboxOpen && (
+        <div
+          className='fixed inset-0 bg-black bg-opacity-90 flex flex-col justify-center items-center z-50'
+          onClick={() => setLightboxOpen(false)}
+        >
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              prevImage()
+            }}
+            className='absolute left-5 top-1/2 text-white text-3xl select-none'
+            aria-label='Previous Image'
+          >
+            ‹
+          </button>
+
+          <img
+            src={artworks[currentIndex].imageUrl}
+            alt={artworks[currentIndex].title}
+            className='max-w-full max-h-[80vh] rounded-lg'
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              nextImage()
+            }}
+            className='absolute right-5 top-1/2 text-white text-3xl select-none'
+            aria-label='Next Image'
+          >
+            ›
+          </button>
+
+          <p className='mt-4 text-white font-serif text-xl'>
+            {artworks[currentIndex].title}
+          </p>
+        </div>
+      )}
+    </section>
   )
 }
 
