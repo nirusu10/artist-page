@@ -121,6 +121,9 @@ const Gallery = () => {
             src={artworks[currentIndex].imageUrl}
             alt={artworks[currentIndex].title}
             className='max-w-full max-h-[80vh] rounded-lg cursor-pointer'
+          />
+
+          <button
             onClick={(e) => {
               e.stopPropagation()
               window.open(
@@ -129,7 +132,10 @@ const Gallery = () => {
                 'noopener,noreferrer'
               )
             }}
-          />
+            className='mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition'
+          >
+            Open Full Image
+          </button>
 
           <button
             onClick={(e) => {
