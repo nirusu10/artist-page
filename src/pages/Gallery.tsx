@@ -17,7 +17,7 @@ const Gallery = () => {
     const fetchedArtworks = Array.from({ length: 10 }, (_, i) => ({
       id: i + 1,
       title: `Artwork #${i + 1}`,
-      imageUrl: `https://picsum.photos/seed/art${i}/800/600`,
+      imageUrl: `https://picsum.photos/seed/art${i}/3840/2160`,
       description: 'Random image from Lorem Picsum.',
     }))
     setArtworks(fetchedArtworks)
