@@ -111,7 +111,7 @@ const Gallery = () => {
               e.stopPropagation()
               prevImage()
             }}
-            className='absolute left-3 top-1/2 -translate-y-1/2 text-white text-4xl p-4 rounded-full bg-black bg-opacity-40 hover:bg-opacity-60'
+            className='hidden md:block absolute left-3 top-1/2 -translate-y-1/2 text-white text-4xl p-4 rounded-full bg-black bg-opacity-40 hover:bg-opacity-60'
             aria-label='Previous Image'
           >
             ‹
@@ -142,7 +142,7 @@ const Gallery = () => {
               e.stopPropagation()
               nextImage()
             }}
-            className='absolute right-3 top-1/2 -translate-y-1/2 text-white text-4xl p-4 rounded-full bg-black bg-opacity-40 hover:bg-opacity-60'
+            className='hidden md:block absolute right-3 top-1/2 -translate-y-1/2 text-white text-4xl p-4 rounded-full bg-black bg-opacity-40 hover:bg-opacity-60'
             aria-label='Next Image'
           >
             ›
