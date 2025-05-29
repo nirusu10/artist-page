@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react'
 type Artwork = {
   id: number
   title: string
-  imageUrl: string
+  thumbnailUrl: string // small size for gallery
+  fullImageUrl: string // large size for full view
   description: string
 }
 
@@ -14,12 +15,17 @@ const Gallery = () => {
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
 
   useEffect(() => {
-    const fetchedArtworks = Array.from({ length: 10 }, (_, i) => ({
-      id: i + 1,
-      title: `Artwork #${i + 1}`,
-      imageUrl: `https://picsum.photos/seed/art${i}/3840/2160`,
-      description: 'Random image from Lorem Picsum.',
-    }))
+    const fetchedArtworks = Array.from({ length: 10 }).map(() => {
+      const id = Math.floor(Math.random() * 1085)
+      return {
+        id,
+        thumbnailUrl: `https://picsum.photos/id/${id}/400/300`,
+        fullImageUrl: `https://picsum.photos/id/${id}/1600/1200`,
+        title: `Artwork ${id}`,
+        description: 'A random image I got from Lorem Picsum',
+      }
+    })
+
     setArtworks(fetchedArtworks)
   }, [])
 
@@ -90,7 +96,7 @@ const Gallery = () => {
             }}
           >
             <img
-              src={art.imageUrl}
+              src={art.thumbnailUrl}
               alt={art.title}
               className='w-full h-60 object-cover'
             />
@@ -139,7 +145,7 @@ const Gallery = () => {
           </button>
 
           <img
-            src={artworks[currentIndex].imageUrl}
+            src={artworks[currentIndex].thumbnailUrl}
             alt={artworks[currentIndex].title}
             className='max-w-full max-h-[80vh] rounded-lg cursor-pointer'
           />
@@ -148,7 +154,7 @@ const Gallery = () => {
             onClick={(e) => {
               e.stopPropagation()
               window.open(
-                artworks[currentIndex].imageUrl,
+                artworks[currentIndex].fullImageUrl,
                 '_blank',
                 'noopener,noreferrer'
               )
