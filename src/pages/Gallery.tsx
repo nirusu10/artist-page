@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 type Artwork = {
   id: number
@@ -11,6 +11,7 @@ const Gallery = () => {
   const [artworks, setArtworks] = useState<Artwork[]>([])
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [touchStartX, setTouchStartX] = useState<number | null>(null)
 
   useEffect(() => {
     const fetchedArtworks = Array.from({ length: 10 }, (_, i) => ({
@@ -23,7 +24,7 @@ const Gallery = () => {
   }, [])
 
   useEffect(() => {
-    if (!lightboxOpen) return // only listen when open
+    if (!lightboxOpen) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') {
@@ -38,7 +39,6 @@ const Gallery = () => {
     }
 
     window.addEventListener('keydown', handleKeyDown)
-
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [lightboxOpen, artworks.length])
 
@@ -88,6 +88,23 @@ const Gallery = () => {
         <div
           className='fixed inset-0 bg-black bg-opacity-90 flex flex-col justify-center items-center z-50'
           onClick={() => setLightboxOpen(false)}
+          onTouchStart={(e) => setTouchStartX(e.touches[0].clientX)}
+          onTouchEnd={(e) => {
+            if (touchStartX === null) return
+
+            const touchEndX = e.changedTouches[0].clientX
+            const diffX = touchEndX - touchStartX
+
+            const swipeThreshold = 50 // pixels needed to consider swipe
+
+            if (diffX > swipeThreshold) {
+              prevImage()
+            } else if (diffX < -swipeThreshold) {
+              nextImage()
+            }
+
+            setTouchStartX(null)
+          }}
         >
           <button
             onClick={(e) => {
@@ -103,8 +120,15 @@ const Gallery = () => {
           <img
             src={artworks[currentIndex].imageUrl}
             alt={artworks[currentIndex].title}
-            className='max-w-full max-h-[80vh] rounded-lg'
-            onClick={(e) => e.stopPropagation()}
+            className='max-w-full max-h-[80vh] rounded-lg cursor-pointer'
+            onClick={(e) => {
+              e.stopPropagation()
+              window.open(
+                artworks[currentIndex].imageUrl,
+                '_blank',
+                'noopener,noreferrer'
+              )
+            }}
           />
 
           <button
